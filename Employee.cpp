@@ -1,6 +1,6 @@
 #include "Employee.h"
 
-Employee::Employee() : busy(false), customer(nullptr) {
+Employee::Employee() : busy(false), service_time(-1), customer(nullptr) {
 
 }
 
@@ -8,10 +8,18 @@ Employee::~Employee() {
 	delete customer;
 }
 
-void Employee::makeBusy() { busy = true; }
-void Employee::makeFree() { busy = false; }
-bool Employee::ifBusy() const { return busy; }
+bool Employee::getStatus() const { return busy; }
 
-void Employee::assignCustomer(Customer* customer) { this->customer = customer; }
-void Employee::removeCustomer() { delete customer; }
+double Employee::getServiceTime() const { return service_time; }
+
+void Employee::serveCustomer(Customer* customer, double time) {
+	this->customer = customer;
+	service_time = time;
+	busy = true;
+}
+void Employee::finishService() {
+	//delete customer;
+	service_time = -1;
+	busy = false;
+}
 

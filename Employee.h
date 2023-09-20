@@ -9,15 +9,15 @@ public:
 	Employee();
 	~Employee();
 
-	void makeBusy();
-	void makeFree();
-	bool ifBusy() const;
+	bool getStatus() const;
+	double getServiceTime() const;
 
-	void assignCustomer(Customer* customer);
-	void removeCustomer();
+	void serveCustomer(Customer* customer, double time);
+	void finishService();
 
 private:
 	bool busy;
+	double service_time;
 	Customer* customer;
 };
 

@@ -1,6 +1,7 @@
 #ifndef SIMULATION_RESTAURANTSIM_H_
 #define SIMULATION_RESTAURANTSIM_H_
 
+#include <iostream>
 #include <queue>
 #include <vector>
 #include <random>
@@ -17,25 +18,28 @@ public:
 	Restaurant();
 	~Restaurant();
 
-	void init();
 	void execute();
 
 	void arrivalOfCustomer();
-	void completionOfService();
-
-	void startOfService();
+	void startOfService(int id);
+	void completionOfService(int id);
 
 
 private:
-	const float SERVICE_TIME;
+	const double SERVICE_TIME;
 	const int NO_OF_EMPLOYEES, NO_OF_CHICKEN_STANDS, NO_OF_BEEF_STANDS;
 
-	double sim_time;
+	double simulation_time, max_simulation_time, next_arrival;
 	
 	queue<Customer*> chickenWrapQueue, beefWrapQueue;
 
 	vector<Employee*> employees;
 	vector<Stand*> chickenStands, beefStands;
+
+	random_device rd;
+	mt19937 generator;
+
+	void advanceSimulationTime();
 };
 
 using Simulation = Restaurant;
