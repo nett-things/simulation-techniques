@@ -1,11 +1,17 @@
 #include "Customer.h"
 
-Customer::Customer(double arrival_time) : arrival_time(arrival_time) {
-	
+Customer::Customer() : Customer(-1) { }
+Customer::Customer(double arrival_time) : arrival_time(arrival_time) { }
+
+Customer::~Customer() { }
+
+void Customer::setArrivalTime(double time) {
+	arrival_time = time;
 }
 
-Customer::~Customer() {
-	
+double Customer::getArrivalTime() const {
+	return arrival_time;
 }
+
 
 

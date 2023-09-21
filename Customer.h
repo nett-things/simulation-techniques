@@ -4,11 +4,16 @@
 // Class that represents a single customer
 class Customer {
 public:
+	Customer();
 	Customer(double arrival_time);
+
 	~Customer();
 
+	void setArrivalTime(double time);
+	double getArrivalTime() const;
+
 private:
-	//const int ID; //commented because the constructor is not defined
+	//const int ID;
 	double arrival_time;
 };
 

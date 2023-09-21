@@ -18,9 +18,10 @@ public:
 
 	~Stand();
 
-	double getMeat();
+	double getMeat() const;
+	void provideMeat(double simulation_time);
 
-	void provideMeat(double time);
+	double getAverageStorageTime() const;
 
 private:
 	const int NO_OF_STANDS;
@@ -28,6 +29,8 @@ private:
 	const double MEAN, VARIANCE;
 
 	double sliced_meat, storage_time;
+	double total_storage_time;
+	unsigned storage_units;
 };
 
 
