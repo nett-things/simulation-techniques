@@ -1,33 +1,33 @@
 #ifndef SIMULATION_STAND_H_
 #define SIMULATION_STAND_H_
 
-#include <queue>
+#include <iostream>
 #include <random>
 
 using namespace std;
 
-/*class Meat {
-p8ublic:
-	//SlicedMeat();
-
-private:
-	float weight, timeOfSlicing;
-};*/
-
 // Class that represents a single meat stand that generates one type of meat
 class Stand {
 public:
+	enum MeatType {
+		UNDEFINED, CHICKEN, BEEF
+	};
+
 	Stand();
-	Stand(double mean, double variance);
+	Stand(int number_of_stands, MeatType type_of_meat, double mean, double variance);
 
 	~Stand();
 
-	void provideMeat();
+	double getMeat();
+
+	void provideMeat(double time);
 
 private:
+	const int NO_OF_STANDS;
+	const MeatType TYPE_OF_MEAT;
 	const double MEAN, VARIANCE;
 
-	double slicedMeat; //queue<Meat*> slicedMeat;
+	double sliced_meat, storage_time;
 };
 
 

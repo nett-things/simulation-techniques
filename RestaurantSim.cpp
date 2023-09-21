@@ -7,16 +7,12 @@ Restaurant::Restaurant()
 	NO_OF_BEEF_STANDS(5),
 	simulation_time(0),
 	max_simulation_time(10),
-	generator{rd()} {
+	generator{rd()},
+	chickenStands(NO_OF_CHICKEN_STANDS, Stand::MeatType::CHICKEN, 2.0, 0.3),
+	beefStands(NO_OF_BEEF_STANDS, Stand::MeatType::BEEF,1.0, 1.1 ) {
 
 	for(int i = 0; i < NO_OF_EMPLOYEES; i++)
 		employees.push_back(new Employee());
-
-	for(int i = 0; i < NO_OF_CHICKEN_STANDS; i++)
-		chickenStands.push_back(new Stand(2.0, 0.3));
-
-	for(int i = 0; i < NO_OF_BEEF_STANDS; i++)
-		beefStands.push_back(new Stand(1.0, 1.1));
 
 	static exponential_distribution<> d(0.9);
 	next_arrival = d(generator);
@@ -24,8 +20,6 @@ Restaurant::Restaurant()
 
 Restaurant::~Restaurant() {
 	employees.clear();
-	chickenStands.clear();
-	beefStands.clear();
 }
 
 void Restaurant::execute() {

@@ -32,9 +32,9 @@ private:
 	double simulation_time, max_simulation_time, next_arrival;
 	
 	queue<Customer*> chickenWrapQueue, beefWrapQueue;
-
 	vector<Employee*> employees;
-	vector<Stand*> chickenStands, beefStands;
+
+	Stand chickenStands, beefStands;
 
 	random_device rd;
 	mt19937 generator;

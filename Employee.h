@@ -18,7 +18,7 @@ public:
 private:
 	bool busy;
 	double service_time;
-	Customer* customer;
+	Customer* serviced_customer;
 };
 
 #endif
