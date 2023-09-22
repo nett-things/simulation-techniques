@@ -33,7 +33,8 @@ public:
 	~Restaurant();
 
 	void execute();
-	void sampleEveryTimeAdvance(bool if_sampling);
+	void sampleWaitingTime(bool if_sampling);
+	void sampleAverageEveryTimeAdvance(bool if_sampling);
 
 	double getAverageWaitingTime() const;
 	double getAverageChickenStorageTime() const;
@@ -45,8 +46,11 @@ public:
 	double getAverageEmployeeTimeUtilization() const;
 
 	void printResults() const;
-	Data getData() const;
-	vector<Data> getDataSet();
+
+	vector<double> getWaitingTimeDataSet();
+
+	Data getAverageData() const;
+	vector<Data> getAverageDataSet();
 
 private:
 	const double SERVICE_TIME;
@@ -60,8 +64,9 @@ private:
 
 	Stand chickenStands, beefStands;
 
-	bool sampling;
-	vector<Data> data_set;
+	bool sample_waiting_time, sample_average_data;
+	vector<double> waiting_time_data_set;
+	vector<Data> data_set, average_data_set;
 
 	random_device rd;
 	mt19937 generator;
@@ -74,7 +79,7 @@ private:
 	void updateChickenQueueData();
 	void updateBeefQueueData();
 
-	Data encapsulateData() const;
+	Data encapsulateAverageData() const;
 };
 
 using Simulation = Restaurant;

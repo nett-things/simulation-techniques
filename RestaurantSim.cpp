@@ -16,8 +16,9 @@ Restaurant::Restaurant(double max_time)
 	num_of_chicken_queue_changes(0),
 	num_of_beef_queue_changes(0),
 	chickenStands(NO_OF_CHICKEN_STANDS, Stand::MeatType::CHICKEN, 2.0, 0.3),
-	beefStands(NO_OF_BEEF_STANDS, Stand::MeatType::BEEF,1.0, 1.1 ),
-	sampling(false),
+	beefStands(NO_OF_BEEF_STANDS, Stand::MeatType::BEEF, 1.0, 1.1),
+	sample_waiting_time(false),
+	sample_average_data(false),
 	generator{rd()} {
 
 	for(int i = 0; i < NO_OF_EMPLOYEES; i++)
@@ -56,17 +57,23 @@ void Restaurant::execute() {
 			}
 		}
 
-		if(simulation_time > 0.0 && sampling)
-			data_set.push_back(encapsulateData());
+		if(simulation_time > 0.0 && sample_average_data)
+			average_data_set.push_back(encapsulateAverageData());
 		
 
 		advanceSimulationTime();
 	}
 }
 
-void Restaurant::sampleEveryTimeAdvance(bool if_sampling) {
-	sampling = if_sampling;
+void Restaurant::sampleWaitingTime(bool if_sampling) {
+	sample_waiting_time = if_sampling;
 }
+
+void Restaurant::sampleAverageEveryTimeAdvance(bool if_sampling) {
+	sample_average_data = if_sampling;
+}
+
+//-------------------------------------------------------------------
 
 double Restaurant::getAverageWaitingTime() const {
 	return total_waiting_time / num_of_served_customers;
@@ -100,6 +107,8 @@ double Restaurant::getAverageEmployeeTimeUtilization() const {
 	return average_busy_time / simulation_time * 100;
 }
 
+//-------------------------------------------------------------------
+
 void Restaurant::printResults() const {
 	cout << "Average customer waiting time: \t\t" << getAverageWaitingTime() << endl;
 	cout << "Average storage time of chicken meat: \t" << getAverageChickenStorageTime() << endl;
@@ -111,12 +120,16 @@ void Restaurant::printResults() const {
 	cout << "Average utilization of employee time: \t" << getAverageEmployeeTimeUtilization() << "%" << endl;
 }
 
-Restaurant::Data Restaurant::getData() const {
-	return encapsulateData();
+vector<double> Restaurant::getWaitingTimeDataSet() {
+	return waiting_time_data_set;
 }
 
-vector<Restaurant::Data> Restaurant::getDataSet() {
-	return data_set;
+Restaurant::Data Restaurant::getAverageData() const {
+	return encapsulateAverageData();
+}
+
+vector<Restaurant::Data> Restaurant::getAverageDataSet() {
+	return average_data_set;
 }
 
 void Restaurant::arrivalOfCustomer() {
@@ -179,7 +192,11 @@ void Restaurant::startOfService(int id) {
 
 void Restaurant::completionOfService(int id) {
 	//complete the service and make the employee free
-	total_waiting_time += employees[id]->finishService(simulation_time);
+	const double waiting_time = employees[id]->finishService(simulation_time);
+
+	waiting_time_data_set.push_back(waiting_time);
+
+	total_waiting_time += waiting_time;
 	num_of_served_customers++;
 
 	cerr << "[completionOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
@@ -206,7 +223,7 @@ void Restaurant::updateBeefQueueData() {
 	num_of_beef_queue_changes++;
 }
 
-Restaurant::Data Restaurant::encapsulateData() const {
+Restaurant::Data Restaurant::encapsulateAverageData() const {
 	Data data = Data{};
 
 	data.simulation_time = simulation_time;
