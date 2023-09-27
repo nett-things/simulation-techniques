@@ -50,5 +50,5 @@ void Stand::provideMeat(double simulation_time) {
 }
 
 double Stand::getAverageStorageTime() const {
-	return total_storage_time/storage_units;
+	return (storage_units != 0) ? (total_storage_time/storage_units) : 0;
 }

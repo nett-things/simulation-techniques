@@ -76,7 +76,7 @@ void Restaurant::sampleAverageEveryTimeAdvance(bool if_sampling) {
 //-------------------------------------------------------------------
 
 double Restaurant::getAverageWaitingTime() const {
-	return total_waiting_time / num_of_served_customers;
+	return (num_of_served_customers != 0) ? (total_waiting_time / num_of_served_customers) : 0;
 }
 
 double Restaurant::getAverageChickenStorageTime() const {
@@ -89,16 +89,19 @@ double Restaurant::getAverageMeatStorageTime() const {
 	return (chickenStands.getAverageStorageTime() + beefStands.getAverageStorageTime()) / 2;
 }
 double Restaurant::getAverageChickenQueueLength() const {
-	return total_chicken_queue * 1.0 / num_of_chicken_queue_changes;
+	return (num_of_chicken_queue_changes != 0) ? (total_chicken_queue * 1.0 / num_of_chicken_queue_changes) : 0;
 }
 double Restaurant::getAverageBeefQueueLength() const {
-	return total_beef_queue * 1.0 / num_of_beef_queue_changes;
+	return (num_of_beef_queue_changes != 0) ? (total_beef_queue * 1.0 / num_of_beef_queue_changes) : 0;
 }
 double Restaurant::getAverageQueueLength() const {
 	return (getAverageChickenQueueLength() + getAverageBeefQueueLength()) / 2;
 }
 
 double Restaurant::getAverageEmployeeTimeUtilization() const {
+	if(simulation_time == 0.0)
+		return 0.0;
+
 	double average_busy_time = 0;
 	for(int i = 0; i < NO_OF_EMPLOYEES; i++)
 		average_busy_time += employees[i]->getTotalBusyTime();
