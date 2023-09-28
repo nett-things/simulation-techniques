@@ -1,6 +1,6 @@
 #include "Employee.h"
 
-Employee::Employee() : busy(false), service_time(-1), started_service(0.0), total_busy_time(0.0), serviced_customer(nullptr) {}
+Employee::Employee() : busy(false), service_time(-1), started_service(0.0), serviced_customer(nullptr) {}
 
 Employee::~Employee() {
 	delete serviced_customer;
@@ -12,10 +12,6 @@ bool Employee::getStatus() const {
 
 double Employee::getServiceTime() const {
 	return service_time;
-}
-
-double Employee::getTotalBusyTime() const {
-	return total_busy_time;
 }
 
 void Employee::serveCustomer(double simulation_time, Customer* customer, double time) {
@@ -33,8 +29,6 @@ double Employee::finishService(double simulation_time) {
 	busy = false;
 
 	delete serviced_customer;
-
-	total_busy_time += simulation_time - started_service;
 
 	return waiting_time;
 }

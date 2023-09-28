@@ -11,14 +11,13 @@ public:
 
 	bool getStatus() const;
 	double getServiceTime() const;
-	double getTotalBusyTime() const;
 
 	void serveCustomer(double simulation_time, Customer* customer, double time);
 	double finishService(double simulation_time);
 
 private:
 	bool busy;
-	double service_time, started_service, total_busy_time;
+	double service_time, started_service;
 	Customer* serviced_customer;
 };
 

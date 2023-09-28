@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <random>
+#include <cmath>
 
 using namespace std;
 
@@ -19,9 +20,7 @@ public:
 	~Stand();
 
 	double getMeat() const;
-	void provideMeat(double simulation_time);
-
-	double getAverageStorageTime() const;
+	void provideMeat(double simulation_time, bool print);
 
 private:
 	const int NO_OF_STANDS;
@@ -29,8 +28,6 @@ private:
 	const double MEAN, VARIANCE;
 
 	double sliced_meat, storage_time;
-	double total_storage_time;
-	unsigned storage_units;
 };
 
 

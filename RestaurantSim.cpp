@@ -1,4 +1,5 @@
 ﻿#include "RestaurantSim.h"
+#include "RestaurantSim.h"
 
 Restaurant::Restaurant() : Restaurant(1000) { }
 
@@ -9,16 +10,9 @@ Restaurant::Restaurant(double max_time)
 	NO_OF_BEEF_STANDS(5),
 	simulation_time(0),
 	max_simulation_time(max_time),
-	total_waiting_time(0.0),
-	num_of_served_customers(0),
-	total_chicken_queue(0),
-	total_beef_queue(0),
-	num_of_chicken_queue_changes(0),
-	num_of_beef_queue_changes(0),
 	chickenStands(NO_OF_CHICKEN_STANDS, Stand::MeatType::CHICKEN, 2.0, 0.3),
 	beefStands(NO_OF_BEEF_STANDS, Stand::MeatType::BEEF, 1.0, 1.1),
-	sample_waiting_time(false),
-	sample_average_data(false),
+	operation_mode(CONTINUOUS),
 	generator{rd()} {
 
 	for(int i = 0; i < NO_OF_EMPLOYEES; i++)
@@ -33,6 +27,9 @@ Restaurant::~Restaurant() {
 }
 
 void Restaurant::execute() {
+	if(operation_mode == STEP_BY_STEP)
+		cerr << "[simulation] \t\tstarted at time: " << simulation_time << endl;
+
 	while(simulation_time < max_simulation_time) {
 		bool no_event_triggered = false;
 
@@ -57,82 +54,18 @@ void Restaurant::execute() {
 			}
 		}
 
-		if(simulation_time > 0.0 && sample_average_data)
-			average_data_set.push_back(encapsulateAverageData());
-		
-
 		advanceSimulationTime();
 	}
+
+	if(operation_mode == STEP_BY_STEP)
+		cerr << "[simulation] \t\tended at time: " << simulation_time << endl;
 }
 
-void Restaurant::sampleWaitingTime(bool if_sampling) {
-	sample_waiting_time = if_sampling;
-}
+void Restaurant::setMode(Mode mode) {
+	operation_mode = mode;
 
-void Restaurant::sampleAverageEveryTimeAdvance(bool if_sampling) {
-	sample_average_data = if_sampling;
-}
-
-//-------------------------------------------------------------------
-
-double Restaurant::getAverageWaitingTime() const {
-	return (num_of_served_customers != 0) ? (total_waiting_time / num_of_served_customers) : 0;
-}
-
-double Restaurant::getAverageChickenStorageTime() const {
-	return chickenStands.getAverageStorageTime();
-}
-double Restaurant::getAverageBeefStorageTime() const {
-	return beefStands.getAverageStorageTime();
-}
-double Restaurant::getAverageMeatStorageTime() const {
-	return (chickenStands.getAverageStorageTime() + beefStands.getAverageStorageTime()) / 2;
-}
-double Restaurant::getAverageChickenQueueLength() const {
-	return (num_of_chicken_queue_changes != 0) ? (total_chicken_queue * 1.0 / num_of_chicken_queue_changes) : 0;
-}
-double Restaurant::getAverageBeefQueueLength() const {
-	return (num_of_beef_queue_changes != 0) ? (total_beef_queue * 1.0 / num_of_beef_queue_changes) : 0;
-}
-double Restaurant::getAverageQueueLength() const {
-	return (getAverageChickenQueueLength() + getAverageBeefQueueLength()) / 2;
-}
-
-double Restaurant::getAverageEmployeeTimeUtilization() const {
-	if(simulation_time == 0.0)
-		return 0.0;
-
-	double average_busy_time = 0;
-	for(int i = 0; i < NO_OF_EMPLOYEES; i++)
-		average_busy_time += employees[i]->getTotalBusyTime();
-	average_busy_time /= NO_OF_EMPLOYEES;
-
-	return average_busy_time / simulation_time * 100;
-}
-
-//-------------------------------------------------------------------
-
-void Restaurant::printResults() const {
-	cout << "Average customer waiting time: \t\t" << getAverageWaitingTime() << endl;
-	cout << "Average storage time of chicken meat: \t" << getAverageChickenStorageTime() << endl;
-	cout << "Average storage time of beef meat: \t" << getAverageBeefStorageTime() << endl;
-	cout << "Average storage time of all meat: \t" << getAverageMeatStorageTime() << endl;
-	cout << "Average chicken wrap queue length: \t" << getAverageChickenQueueLength() << endl;
-	cout << "Average beef wrap queue length: \t" << getAverageBeefQueueLength() << endl;
-	cout << "Average queue length: \t\t\t" << getAverageQueueLength() << endl;
-	cout << "Average utilization of employee time: \t" << getAverageEmployeeTimeUtilization() << "%" << endl;
-}
-
-vector<double> Restaurant::getWaitingTimeDataSet() {
-	return waiting_time_data_set;
-}
-
-Restaurant::Data Restaurant::getAverageData() const {
-	return encapsulateAverageData();
-}
-
-vector<Restaurant::Data> Restaurant::getAverageDataSet() {
-	return average_data_set;
+	if(operation_mode == STEP_BY_STEP)
+		cerr << "[simulation] \t\tmode set to STEP_BY_STEP" << endl;
 }
 
 void Restaurant::arrivalOfCustomer() {
@@ -144,16 +77,13 @@ void Restaurant::arrivalOfCustomer() {
 
 	static bernoulli_distribution distribution(0.5);
 
-	if(distribution(generator)) {
+	if(distribution(generator))
 		chickenWrapQueue.push(newCustomer);
-		updateChickenQueueData();
-
-	} else {
+	else
 		beefWrapQueue.push(newCustomer);
-		updateBeefQueueData();
-	}
 
-	cerr << "[arrivalOfCustomer] \ttime: " << simulation_time << "; chicken queue size: " << chickenWrapQueue.size() << "; beef queue size: " << beefWrapQueue.size() << endl;
+	if(operation_mode == STEP_BY_STEP)
+		cerr << "[arrivalOfCustomer] \ttime: " << simulation_time << "; chicken queue size: " << chickenWrapQueue.size() << "; beef queue size: " << beefWrapQueue.size() << endl;
 
 	//schedule the next arrival
 	static exponential_distribution<> d(0.9);
@@ -169,40 +99,28 @@ void Restaurant::startOfService(int id) {
 		customer = chickenWrapQueue.front();
 		chickenWrapQueue.pop();
 
-		chickenStands.provideMeat(simulation_time);
-
-		updateChickenQueueData();
+		chickenStands.provideMeat(simulation_time, (operation_mode == STEP_BY_STEP) ? true : false);
 
 	} else {
 		customer = beefWrapQueue.front();
 		beefWrapQueue.pop();
 
-		beefStands.provideMeat(simulation_time);
-
-		updateBeefQueueData();
+		beefStands.provideMeat(simulation_time, (operation_mode == STEP_BY_STEP) ? true : false);
 	}
-
-	//const auto longest_queue = (chickenWrapQueue.size() > beefWrapQueue.size()) ? &chickenWrapQueue : &beefWrapQueue;
-
-	//const auto customer = longest_queue->front();
-	//longest_queue->pop();
 
 	//assigning the customer to the employee and making the employee busy
 	employees[id]->serveCustomer(simulation_time, customer, simulation_time + SERVICE_TIME);
 
-	cerr << "[startOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
+	if(operation_mode == STEP_BY_STEP)
+		cerr << "[startOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
 }
 
 void Restaurant::completionOfService(int id) {
 	//complete the service and make the employee free
-	const double waiting_time = employees[id]->finishService(simulation_time);
+	employees[id]->finishService(simulation_time);
 
-	waiting_time_data_set.push_back(waiting_time);
-
-	total_waiting_time += waiting_time;
-	num_of_served_customers++;
-
-	cerr << "[completionOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
+	if(operation_mode == STEP_BY_STEP)
+		cerr << "[completionOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
 }
 
 void Restaurant::advanceSimulationTime() {
@@ -215,30 +133,3 @@ void Restaurant::advanceSimulationTime() {
 
 	simulation_time = min_time;
 }
-
-void Restaurant::updateChickenQueueData() {
-	total_chicken_queue += chickenWrapQueue.size();
-	num_of_chicken_queue_changes++;
-}
-
-void Restaurant::updateBeefQueueData() {
-	total_beef_queue += beefWrapQueue.size();
-	num_of_beef_queue_changes++;
-}
-
-Restaurant::Data Restaurant::encapsulateAverageData() const {
-	Data data = Data{};
-
-	data.simulation_time = simulation_time;
-	data.average_waiting_time = getAverageWaitingTime();
-	data.average_chicken_storage_time = getAverageChickenStorageTime();
-	data.average_beef_storage_time = getAverageBeefStorageTime();
-	data.average_meat_storage_time = getAverageMeatStorageTime();
-	data.average_chicken_queue_length = getAverageChickenQueueLength();
-	data.average_beef_queue_length = getAverageBeefQueueLength();
-	data.average_queue_length = getAverageQueueLength();
-	data.average_employee_time_utilization = getAverageEmployeeTimeUtilization();
-
-	return data;
-}
-
