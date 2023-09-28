@@ -18,7 +18,7 @@ Stand::~Stand() {
 
 double Stand::getMeat() const { return sliced_meat; }
 
-void Stand::provideMeat(double simulation_time, bool print) {
+void Stand::provideMeat(double simulation_time) {
 	static random_device rd{};
 	static mt19937 generator{rd()};
 
@@ -37,9 +37,6 @@ void Stand::provideMeat(double simulation_time, bool print) {
 
 		//update the storage time
 		storage_time = simulation_time;
-
-		if(print)
-			cerr << "[slicingOfMeat] \ttime: " << simulation_time << "; meat: " << (TYPE_OF_MEAT == CHICKEN ? "chicken" : (TYPE_OF_MEAT == BEEF ? "beef" : "undefined")) << "; stored amount: " << sliced_meat << endl;
 	}
 
 	// remove a unit of meat

@@ -12,7 +12,6 @@ Restaurant::Restaurant(double max_time)
 	max_simulation_time(max_time),
 	chickenStands(NO_OF_CHICKEN_STANDS, Stand::MeatType::CHICKEN, 2.0, 0.3),
 	beefStands(NO_OF_BEEF_STANDS, Stand::MeatType::BEEF, 1.0, 1.1),
-	operation_mode(CONTINUOUS),
 	generator{rd()} {
 
 	for(int i = 0; i < NO_OF_EMPLOYEES; i++)
@@ -27,46 +26,11 @@ Restaurant::~Restaurant() {
 }
 
 void Restaurant::execute() {
-	if(operation_mode == STEP_BY_STEP)
-		cerr << "[simulation] \t\tstarted at time: " << simulation_time << endl;
-
 	while(simulation_time < max_simulation_time) {
-		bool no_event_triggered = false;
 
-		while(!no_event_triggered) {
-			no_event_triggered = true;
-
-			if(simulation_time == next_arrival) {
-				arrivalOfCustomer();
-				no_event_triggered = false;
-			}
-
-			for(int i = 0; i < NO_OF_EMPLOYEES; i++) {
-				if(simulation_time == employees[i]->getServiceTime()) {
-					completionOfService(i);
-					no_event_triggered = false;
-				}
-
-				if(!employees[i]->getStatus() && (!chickenWrapQueue.empty() || !beefWrapQueue.empty())) {
-					startOfService(i);
-					no_event_triggered = false;
-				}
-			}
-		}
-
-		advanceSimulationTime();
 	}
-
-	if(operation_mode == STEP_BY_STEP)
-		cerr << "[simulation] \t\tended at time: " << simulation_time << endl;
 }
 
-void Restaurant::setMode(Mode mode) {
-	operation_mode = mode;
-
-	if(operation_mode == STEP_BY_STEP)
-		cerr << "[simulation] \t\tmode set to STEP_BY_STEP" << endl;
-}
 
 void Restaurant::arrivalOfCustomer() {
 	//generate a new customer
@@ -82,9 +46,6 @@ void Restaurant::arrivalOfCustomer() {
 	else
 		beefWrapQueue.push(newCustomer);
 
-	if(operation_mode == STEP_BY_STEP)
-		cerr << "[arrivalOfCustomer] \ttime: " << simulation_time << "; chicken queue size: " << chickenWrapQueue.size() << "; beef queue size: " << beefWrapQueue.size() << endl;
-
 	//schedule the next arrival
 	static exponential_distribution<> d(0.9);
 
@@ -99,37 +60,24 @@ void Restaurant::startOfService(int id) {
 		customer = chickenWrapQueue.front();
 		chickenWrapQueue.pop();
 
-		chickenStands.provideMeat(simulation_time, (operation_mode == STEP_BY_STEP) ? true : false);
+		chickenStands.provideMeat(simulation_time);
 
 	} else {
 		customer = beefWrapQueue.front();
 		beefWrapQueue.pop();
 
-		beefStands.provideMeat(simulation_time, (operation_mode == STEP_BY_STEP) ? true : false);
+		beefStands.provideMeat(simulation_time);
 	}
 
 	//assigning the customer to the employee and making the employee busy
 	employees[id]->serveCustomer(simulation_time, customer, simulation_time + SERVICE_TIME);
-
-	if(operation_mode == STEP_BY_STEP)
-		cerr << "[startOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
 }
 
 void Restaurant::completionOfService(int id) {
 	//complete the service and make the employee free
 	employees[id]->finishService(simulation_time);
-
-	if(operation_mode == STEP_BY_STEP)
-		cerr << "[completionOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
 }
 
 void Restaurant::advanceSimulationTime() {
-	double min_time = next_arrival;
 
-	for(int i = 0; i < NO_OF_EMPLOYEES; i++) {
-		double departure_time = employees[i]->getServiceTime();
-		min_time = ((departure_time > 0) && (departure_time < min_time)) ? departure_time : min_time;
-	}
-
-	simulation_time = min_time;
 }

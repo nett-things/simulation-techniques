@@ -16,16 +16,11 @@ using namespace std;
 // Main class of the simulation, it contains all the objects
 class Restaurant {
 public:
-	enum Mode {
-		STEP_BY_STEP, CONTINUOUS
-	};
-
 	Restaurant();
 	Restaurant(double max_time);
 	~Restaurant();
 
 	void execute();
-	void setMode(Mode mode);
 
 private:
 	const double SERVICE_TIME;
@@ -37,8 +32,6 @@ private:
 	vector<Employee*> employees;
 
 	Stand chickenStands, beefStands;
-
-	Mode operation_mode;
 
 	random_device rd;
 	mt19937 generator;

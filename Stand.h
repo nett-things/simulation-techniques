@@ -20,7 +20,7 @@ public:
 	~Stand();
 
 	double getMeat() const;
-	void provideMeat(double simulation_time, bool print);
+	void provideMeat(double simulation_time);
 
 private:
 	const int NO_OF_STANDS;
