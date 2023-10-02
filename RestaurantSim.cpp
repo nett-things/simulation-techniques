@@ -19,6 +19,7 @@ Restaurant::Restaurant(double max_time)
 	beefStands(NO_OF_BEEF_STANDS, Stand::MeatType::BEEF, 1.0, 1.1),
 	sample_waiting_time(false),
 	sample_average_data(false),
+	print_steps(false),
 	generator{rd()} {
 
 	for(int i = 0; i < NO_OF_EMPLOYEES; i++)
@@ -33,6 +34,9 @@ Restaurant::~Restaurant() {
 }
 
 void Restaurant::execute() {
+	if(print_steps)
+		cerr << "[simulation] \t\tstart at time: " << simulation_time << endl;
+
 	while(simulation_time < max_simulation_time) {
 		bool no_event_triggered = false;
 
@@ -60,9 +64,15 @@ void Restaurant::execute() {
 		if(simulation_time > 0.0 && sample_average_data)
 			average_data_set.push_back(encapsulateAverageData());
 		
-
 		advanceSimulationTime();
 	}
+
+	if(print_steps)
+		cerr << "[simulation] \t\tend at time: " << simulation_time << endl;
+}
+
+void Restaurant::setMode(Mode mode) {
+	print_steps = (mode == Restaurant::STEP_BY_STEP) ? true : false;
 }
 
 void Restaurant::sampleWaitingTime(bool if_sampling) {
@@ -153,7 +163,8 @@ void Restaurant::arrivalOfCustomer() {
 		updateBeefQueueData();
 	}
 
-	cerr << "[arrivalOfCustomer] \ttime: " << simulation_time << "; chicken queue size: " << chickenWrapQueue.size() << "; beef queue size: " << beefWrapQueue.size() << endl;
+	if(print_steps)
+		cerr << "[arrivalOfCustomer] \ttime: " << simulation_time << "; chicken queue size: " << chickenWrapQueue.size() << "; beef queue size: " << beefWrapQueue.size() << endl;
 
 	//schedule the next arrival
 	static exponential_distribution<> d(0.9);
@@ -169,7 +180,7 @@ void Restaurant::startOfService(int id) {
 		customer = chickenWrapQueue.front();
 		chickenWrapQueue.pop();
 
-		chickenStands.provideMeat(simulation_time);
+		chickenStands.provideMeat(simulation_time, print_steps);
 
 		updateChickenQueueData();
 
@@ -177,7 +188,7 @@ void Restaurant::startOfService(int id) {
 		customer = beefWrapQueue.front();
 		beefWrapQueue.pop();
 
-		beefStands.provideMeat(simulation_time);
+		beefStands.provideMeat(simulation_time, print_steps);
 
 		updateBeefQueueData();
 	}
@@ -190,7 +201,8 @@ void Restaurant::startOfService(int id) {
 	//assigning the customer to the employee and making the employee busy
 	employees[id]->serveCustomer(simulation_time, customer, simulation_time + SERVICE_TIME);
 
-	cerr << "[startOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
+	if(print_steps)
+		cerr << "[startOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
 }
 
 void Restaurant::completionOfService(int id) {
@@ -202,7 +214,8 @@ void Restaurant::completionOfService(int id) {
 	total_waiting_time += waiting_time;
 	num_of_served_customers++;
 
-	cerr << "[completionOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
+	if(print_steps)
+		cerr << "[completionOfService] \ttime: " << simulation_time << "; employee: " << id << endl;
 }
 
 void Restaurant::advanceSimulationTime() {

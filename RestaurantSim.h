@@ -16,6 +16,11 @@ using namespace std;
 // Main class of the simulation, it contains all the objects
 class Restaurant {
 public:
+	enum Mode {
+		CONTINUOUS,
+		STEP_BY_STEP
+	};
+
 	struct Data {
 		double simulation_time;
 		double average_waiting_time;
@@ -33,6 +38,7 @@ public:
 	~Restaurant();
 
 	void execute();
+	void setMode(Mode mode);
 	void sampleWaitingTime(bool if_sampling);
 	void sampleAverageEveryTimeAdvance(bool if_sampling);
 
@@ -64,7 +70,7 @@ private:
 
 	Stand chickenStands, beefStands;
 
-	bool sample_waiting_time, sample_average_data;
+	bool sample_waiting_time, sample_average_data, print_steps;
 	vector<double> waiting_time_data_set;
 	vector<Data> data_set, average_data_set;
 

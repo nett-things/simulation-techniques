@@ -19,7 +19,7 @@ public:
 	~Stand();
 
 	double getMeat() const;
-	void provideMeat(double simulation_time);
+	void provideMeat(double simulation_time, bool print_steps);
 
 	double getAverageStorageTime() const;
 
