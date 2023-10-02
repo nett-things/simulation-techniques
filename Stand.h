@@ -28,7 +28,7 @@ private:
 	const MeatType TYPE_OF_MEAT;
 	const double MEAN, VARIANCE;
 
-	double sliced_meat, storage_time;
+	double stored_meat, storage_time;
 	double total_storage_time;
 	unsigned storage_units;
 };
