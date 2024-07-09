@@ -10,7 +10,7 @@ The simulation is build in accordance to the following model.
 
 The simulation includes stands that provide sliced chicken and beef for wraps. In the simulation, customers arrive at regular intervals. They randomly choose between beef or chicken wraps. The customers are then placed in separate queues based on their choice. The simulation also includes employees responsible for making the wraps. They serve customers based on availability and the meat available in the respective queues. Each wrap requires 1 unit of meat. The time taken to serve a customer is predetermined.
 
-The in-depth description of the simulation is specified in `project_description.pdf`. This simulation is configured for the following strategies described in the PDF:
+The in-depth description of the simulation is specified in [`project_description.pdf`](project_description.pdf). This simulation is configured for the following strategies described in the PDF:
 
 | Meat slicing strategy  | Wrapping service strateg | Simulation method | Parameters |
 | :---: | :---: | :---: | :---: |
