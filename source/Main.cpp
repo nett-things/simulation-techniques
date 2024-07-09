@@ -17,10 +17,9 @@ int main() {
 
 	if(data_out.is_open())
 		for(auto& i : sim.getAverageDataSet())
-			data_out << i.simulation_time << "\t" << i.average_waiting_time << endl;
+			data_out << i.simulation_time << "\t" << i.average_waiting_time << "\t" << i.average_meat_storage_time << "\t" << i.average_queue_length << "\t" << i.average_employee_time_utilization << endl;
 
 	data_out.close(); 
-
 
 	return 0;
 }
