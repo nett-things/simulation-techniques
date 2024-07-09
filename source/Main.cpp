@@ -9,10 +9,11 @@ using namespace std;
 int main() {
 	Simulation sim(10000);
 	sim.sampleAverageEveryTimeAdvance(true);
+	sim.setMode(Simulation::STEP_BY_STEP);
 	sim.execute();
 	sim.printResults();
 
-	fstream data_out("avg.txt", fstream::out);
+	fstream data_out("output\\avg_data.txt", fstream::out);
 
 	if(data_out.is_open())
 		for(auto& i : sim.getAverageDataSet())

@@ -15,33 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="source\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RestaurantSim.cpp">
+    <ClCompile Include="source\RestaurantSim.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Customer.cpp">
+    <ClCompile Include="source\Customer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Employee.cpp">
+    <ClCompile Include="source\Employee.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Stand.cpp">
+    <ClCompile Include="source\Stand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RestaurantSim.h">
+    <ClInclude Include="source\RestaurantSim.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Customer.h">
+    <ClInclude Include="source\Customer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Employee.h">
+    <ClInclude Include="source\Employee.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Stand.h">
+    <ClInclude Include="source\Stand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
